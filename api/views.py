@@ -13,10 +13,10 @@ class PointSerializer(GeoFeatureModelSerializer):
             'point',
         ]
 
-class PointView(RetrieveUpdateDestroyAPIView):
+class PointListView(ListCreateAPIView):
     queryset = models.Point.objects.all()
     serializer_class = PointSerializer
 
-class PointListView(ListCreateAPIView):
+class PointView(RetrieveUpdateDestroyAPIView):
     queryset = models.Point.objects.all()
     serializer_class = PointSerializer

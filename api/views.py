@@ -1,19 +1,31 @@
-import json
-from django.http import HttpResponse
-from django.core import serializers
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.gis.geos import Point
 from django.contrib.gis.db import models
+
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin
+from rest_framework.generics import GenericAPIView
+from rest_framework.request import Request
+
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from . import models
 
-@csrf_exempt
-def point(request):
-    if request.method == 'GET':
-        data = serializers.serialize('geojson', list(models.Point.objects.all()))
-        return HttpResponse(data, content_type='application/json')
-    elif request.method == 'POST':
-        data = json.loads(request.body)
-        x, y = data['geometry']['coordinates']
-        models.Point.objects.create(point=Point(x, y))
-        return HttpResponse({'ok': True})
+class PointSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = models.Point
+        geo_field = 'point'
+        fields = [
+            'id',
+            'point',
+        ]
+
+class PointView(GenericAPIView, ListModelMixin, CreateModelMixin, UpdateModelMixin):
+    serializer_class = PointSerializer
+    queryset = models.Point.objects.all()
+
+    def get(self, request: Request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request: Request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def patch(self, request: Request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)

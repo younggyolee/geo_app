@@ -1,3 +1,8 @@
-from django.db import models
+from django.contrib.gis.db import models
 
-# Create your models here.
+class Point(models.Model):
+    point = models.PointField()
+
+
+class Contour(models.Model):
+    polygon = models.PolygonField()

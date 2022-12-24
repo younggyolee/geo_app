@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
@@ -23,7 +24,14 @@ class ContourSerializer(GeoFeatureModelSerializer):
         ]
 
 class PointListView(ListCreateAPIView):
-    queryset = models.Point.objects.all()
+    def get_queryset(self):
+        contour = self.request.query_params.get('contour')
+        if contour is None:
+            return models.Point.objects.all()
+        else:
+            poly = get_object_or_404(models.Contour, pk=contour)
+            return models.Point.objects.filter(point__within=poly.polygon)
+
     serializer_class = PointSerializer
 
 class PointView(RetrieveUpdateDestroyAPIView):

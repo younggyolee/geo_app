@@ -13,6 +13,15 @@ class PointSerializer(GeoFeatureModelSerializer):
             'point',
         ]
 
+class ContourSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = models.Contour
+        geo_field = 'polygon'
+        fields = [
+            'id',
+            'polygon',
+        ]
+
 class PointListView(ListCreateAPIView):
     queryset = models.Point.objects.all()
     serializer_class = PointSerializer
@@ -20,3 +29,11 @@ class PointListView(ListCreateAPIView):
 class PointView(RetrieveUpdateDestroyAPIView):
     queryset = models.Point.objects.all()
     serializer_class = PointSerializer
+
+class ContourListView(ListCreateAPIView):
+    queryset = models.Contour.objects.all()
+    serializer_class = ContourSerializer
+
+class ContourView(RetrieveUpdateDestroyAPIView):
+    queryset = models.Contour.objects.all()
+    serializer_class = ContourSerializer

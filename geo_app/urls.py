@@ -14,11 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from api.views import PointListView, PointView, ContourListView, ContourView
+from api.views import PointListView, PointView, ContourListView, ContourView, ContourIntersectionView
 
 urlpatterns = [
     path('points', PointListView.as_view()),
     path('points/<int:pk>', PointView.as_view()),
     path('contours', ContourListView.as_view()),
     path('contours/<int:pk>', ContourView.as_view()),
+    path('contours/<int:pk>/intersections', ContourIntersectionView.as_view())
 ]

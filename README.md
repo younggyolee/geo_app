@@ -74,8 +74,9 @@ python manage.py runserver
 ```
 
 # Data model
-- It has `id` field which is automatically added from Django side. 
-- It has `data` field which is a GEOSGeometry object.
+- Two models exist: `Point` and `Contour`.
+- They have `id` field which is automatically added from Django side. 
+- They have `data` field which is a GEOSGeometry object.
 - `api/models.py`
 ```python
 from django.contrib.gis.db import models
@@ -88,14 +89,15 @@ class Contour(models.Model):
 ```
 
 # Architecture of the app
-- It basically uses 3 packages: `Django` + `Django-rest-framework` + `djangorestframework-gis`
+- Server application: It basically uses 3 packages: `Django` + `Django-rest-framework` + `djangorestframework-gis`
+- DB: `sqlite` was used for simplicity. Also, the db file `db.sqlite3` was included in the version control for an easier setup process. Some sample data are included in the DB file as well.
 
 ### Django
 - `geo_app`: boilerplate app. It has `settings.py` for the configuration of the whole app.
 - `api`: All the business logics reside here.
 
 ### Django-rest-framework
-- DRF(Django-rest-framework) was implemented since it reduces lots of code duplication on common API endpoint functionalities, serialization and validation.
+- [DRF(Django-rest-framework)](https://www.django-rest-framework.org/) was implemented to reduce lots of code duplication on common API endpoint functionalities, serialization and validation.
 - [Concrete View Class](https://www.django-rest-framework.org/api-guide/generic-views/#concrete-view-classes) functionality was used to drastically reduce the amount of code.
 
 ### djangorestframework-gis
@@ -124,6 +126,10 @@ class Contour(models.Model):
 
 # Things for further improvement
 - GEOSGeometry data conversion: JSON <=> Python dict
+    - Here, `json.loads(geom.json)` is encoding GEOSGeometry object into JSON format, and then decoding it again into Python dict.
+    - This is because I was using the ready-made `djangorestframework-gis` and I couldn't find a way to directly convert `geom` into a python dict that I want.
+    - To avoid this performance loss from this, I will need to build a custom GEOSGeometry serializer.
+
 ```python
     # api/views.py
     def retrieve(self, request: Request, *args, **kwargs):
@@ -133,16 +139,20 @@ class Contour(models.Model):
         serializer = self.get_serializer(json.loads(geom.json))
         return Response(data=serializer.data)
 ```
-    - Here, `json.loads(geom.json)` is encoding GEOSGeometry object into JSON format, and then decoding the JSON into Python dict again.
-    - This is because I was using the ready-made `djangorestframework-gis`.
-    - To avoid this performance loss from this, I will need to build a custom GEOSGeometry serializer.
 
 - GEOSGeometry data format serialization is not centralised
     - Only `ContourIntersectionView`'s output is serialized from custom serializer `GEOSGeometrySerializer`, while others are serialized implicitly by `djangorestframework-gis` since `'rest_framework_gis'` is in `INSTALLED_APPS` in `settings.py`. (See [link](https://github.com/openwisp/django-rest-framework-gis#geomodelserializer-deprecated))
-    - In case the `djangorestframework-gis` changes the output format, our API data representation can also change. To remove dependency, I will need to build up my own custom serializers.
-    - Considering the scope of this assignment, I didn't implement this.
+    - In case `djangorestframework-gis` library is deprecated or somehow changes the output format, our API data representation can be affected. To remove this dependency, I will need to build up my own custom serializers.
+    - Considering the life expectancy of this assignment, the library is not likely to deprecate or change any time soon - so I didn't implement this.
 
 # Sample request & response
+
+### URL
+
+- `http://localhost:8000`
+
+![sample_browser_api_call_response_image](./image1.png)
+
 
 ### [GET] `/points`
 
@@ -182,7 +192,7 @@ class Contour(models.Model):
 </details>
 
 Returns the list of points stored in database with JSON format described as above.
-A paginated query should be supported to limit the count of results.
+Pagination is supported.
 
 ### [GET] `/points/<id>`
 
@@ -296,7 +306,7 @@ Returns a point matching to the identifier with the JSON format described above.
 </details>
 
 Returns the list of contours stored in database with JSON format described above.
-A paginated query should be supported to limit the count of results.
+Pagination is supported.
 
 ### [GET] `/contours/<id>`
 
@@ -524,11 +534,11 @@ Update a contour matching to the identifier with the format described as above.
 
 ### [DELETE] `/points/<id>`
 
-Delete a single point matching the identifier. You can return either the deleted data or no content with status 204.
+Delete a single point matching the identifier. If successful, it returns no content with status 204.
 
 ### [DELETE] `/contours/<id>`
 
-Delete a single contour matching the identifier. You can return either the deleted data or no content with status 204.
+Delete a single contour matching the identifier. If successful, it returns no content with status 204.
 
 ---
 

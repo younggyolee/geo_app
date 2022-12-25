@@ -39,7 +39,7 @@ class ContourIntersectionView(RetrieveAPIView):
 
     def retrieve(self, request: Request, *args, **kwargs):
         try:
-            contour1 = self.get_object()
+            contour1: Contour = self.get_object()
         except Http404:
             raise NotFound(f'The first contour (id: {kwargs["pk"]}) does not exist')
         try:

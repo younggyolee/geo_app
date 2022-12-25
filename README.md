@@ -89,8 +89,8 @@ class Contour(models.Model):
 ```
 
 # Architecture of the app
-- Server application: It basically uses 3 packages: `Django` + `Django-rest-framework` + `djangorestframework-gis`
-- DB: `sqlite` was used for simplicity. Also, the db file `db.sqlite3` was included in the version control for an easier setup process. Some sample data are included in the DB file as well.
+- Server application: 3 packages: `Django` + `Django-rest-framework` + `djangorestframework-gis` were used
+- DB: `sqlite` was used for simplicity. It saves data into `./db.sqlite3`.
 
 ### Django
 - `geo_app`: boilerplate app. It has `settings.py` for the configuration of the whole app.

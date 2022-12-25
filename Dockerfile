@@ -23,5 +23,5 @@ RUN pip install -r requirements.txt
 COPY . /code/
 
 EXPOSE 8000  
-# RUN python manage.py migrate # comment out since I already included the DB for the ease of setup
+RUN python manage.py migrate
 CMD python manage.py runserver 0.0.0.0:8000

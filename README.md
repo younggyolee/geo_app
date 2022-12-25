@@ -1,3 +1,12 @@
+# Tasks
+- [x] Decide on the format => GeoJSON
+- [x] Implement API endpoints
+- [x] Support pagination for GET list endpoints
+- [x] Document commands to launch, stop and test the application
+- [x] Document architecture of the application
+- [x] Design of data model
+- [x] Document API endpoints
+
 # How to run
 
 - Set up python virtual environment (for macOS)
@@ -40,6 +49,55 @@ python manage.py runserver
 
 ```shell
 ./manage.py shell -c "import django;django.db.connection.cursor().execute('SELECT InitSpatialMetaData(1);')";
+```
+
+# Data model
+- It has `id` field which is automatically added from Django side. 
+- It has `data` field which is a GEOSGeometry object.
+- `api/models.py`
+```python
+from django.contrib.gis.db import models
+
+class Point(models.Model):
+    data = models.PointField()
+
+class Contour(models.Model):
+    data = models.PolygonField()
+```
+
+# Architecture of the app
+- It basically uses 3 packages: `Django` + `Django-rest-framework` + `djangorestframework-gis`
+
+### Django
+- `geo_app`: boilerplate app. It has `settings.py` for the configuration of the whole app.
+- `api`: All the business logics reside here.
+
+### Django-rest-framework
+- DRF(Django-rest-framework) was implemented since it reduces lots of code duplication on common API endpoint functionalities, serialization and validation.
+- [Concrete View Class](https://www.django-rest-framework.org/api-guide/generic-views/#concrete-view-classes) functionality was used to drastically reduce the amount of code.
+
+### djangorestframework-gis
+- `djangorestframework-gis` was applied to handle input/output data in GeoJSON format.
+- Without `djangorestframework-gis`, GEOSGeometry object is returned like this
+```json
+{
+    "id": 1,
+    "data": "SRID=4326;POINT (9.999 9.999)"
+}
+```
+
+- With `djangorestframework-gis`,
+```json
+{
+    "id": 1,
+    "data": {
+        "type": "Point",
+        "coordinates": [
+            9.999,
+            9.999
+        ]
+    }
+}
 ```
 
 # Sample request & response

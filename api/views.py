@@ -1,7 +1,7 @@
 import json
 from django.contrib.gis.db import models
 from django.shortcuts import get_object_or_404
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, GenericAPIView, RetrieveAPIView
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -18,6 +18,10 @@ class ContourSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Contour
         fields = ['id', 'data']
+
+class GEOSGeometrySerializer(serializers.Serializer):
+    type = serializers.CharField()
+    coordinates = serializers.ListField()
 
 class PointListView(ListCreateAPIView):
     def get_queryset(self):
@@ -44,8 +48,12 @@ class ContourView(RetrieveUpdateDestroyAPIView):
 
 class ContourIntersectionView(GenericAPIView, RetrieveModelMixin):
     queryset = models.Contour.objects.all()
+    serializer_class = GEOSGeometrySerializer
+
     def get(self, request: Request, *args, **kwargs):
         contour1 = self.get_object()
         contour2 = get_object_or_404(models.Contour, pk=self.request.query_params.get('contour'))
         geom = contour1.data.intersection(contour2.data)
-        return Response(data=json.loads(geom.json))
+        serializer = self.get_serializer(json.loads(geom.json))
+        return Response(data=serializer.data)
+        

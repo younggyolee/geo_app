@@ -13,6 +13,15 @@
 
 # How to run
 
+## 1. Using Docker
+
+```
+docker build . -t geo-app-docker
+docker run -i -t -p 8000:8000 geo-app-docker
+```
+
+## 2. Without Docker
+
 - Set up python virtual environment (for macOS)
   - If not macOS, please follow https://docs.djangoproject.com/en/4.1/ref/contrib/gis/install/ (follow `sqlite`)
 

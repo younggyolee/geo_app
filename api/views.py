@@ -1,5 +1,4 @@
 import json
-from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point, Polygon
 from django.http import Http404
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
@@ -84,4 +83,3 @@ class ContourIntersectionView(RetrieveAPIView):
         geom = contour1.data.intersection(contour2.data)
         serializer = self.get_serializer(json.loads(geom.json))
         return Response(data=serializer.data)
-        

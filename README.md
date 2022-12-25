@@ -536,8 +536,7 @@ Delete a single contour matching the identifier. You can return either the delet
 
 ### [GET] `/points?contour=<id>`
 
-  - When the query parameter `contour` is appended to [[GET]/points](#/points) API, it should return points within the inner area of the contour specified by `id`.
-  - You should return appropriate validation error if there is no contour matched by `id`.
+  - When the query parameter `contour` is appended to [[GET]/points](#/points) API, it returns points within the inner area of the contour specified by `id`.
 
 <details><summary>Response</summary>
 
@@ -576,9 +575,91 @@ Delete a single contour matching the identifier. You can return either the delet
 
 This API calculates the contours of intersection area between contour `id1` and `id2`, and returns the results with following JSON format.
 
-<details><summary>Response</summary>
+- Example
 
-Example 1
+![intersection_example_image](./figure1.png)
+
+<details><summary>Rectangle 1</summary>
+
+```json
+{
+    "data": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    0.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    10.0
+                ],
+                [
+                    10.0,
+                    10.0
+                ],
+                [
+                    10.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    0.0
+                ]
+            ]
+        ]
+    }
+}
+```
+</details>
+
+<details><summary>Rectangle2</summary>
+
+```json
+{
+    "type": "Polygon",
+    "coordinates": [
+        [
+            [
+                -5.0,
+                2.0
+            ],
+            [
+                1.0,
+                2.0
+            ],
+            [
+                -1.0,
+                0.0
+            ],
+            [
+                0.0,
+                -1.0
+            ],
+            [
+                2.0,
+                1.0
+            ],
+            [
+                2.0,
+                -5.0
+            ],
+            [
+                -5.0,
+                -5.0
+            ],
+            [
+                -5.0,
+                2.0
+            ]
+        ]
+    ]
+}
+```
+</details>
+
+<details><summary>Response</summary>
 
 ```json
 {
@@ -627,36 +708,4 @@ Example 1
     ]
 }
 ```
-
-Example 2
-```json
-{
-    "type": "Polygon",
-    "coordinates": [
-        [
-            [
-                0.0,
-                0.0
-            ],
-            [
-                0.0,
-                5.0
-            ],
-            [
-                5.0,
-                5.0
-            ],
-            [
-                5.0,
-                0.0
-            ],
-            [
-                0.0,
-                0.0
-            ]
-        ]
-    ]
-}
-```
-
 </details>

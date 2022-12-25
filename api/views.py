@@ -34,7 +34,7 @@ class PointListView(ListCreateAPIView):
             return models.Point.objects.all()
         else:
             poly = get_object_or_404(models.Contour, pk=contour)
-            return models.Point.objects.filter(point__within=poly.polygon)
+            return models.Point.objects.filter(data__within=poly.data)
 
     serializer_class = PointSerializer
 
@@ -55,5 +55,5 @@ class ContourIntersectionView(GenericAPIView, RetrieveModelMixin):
     def get(self, request: Request, *args, **kwargs):
         contour1 = self.get_object()
         contour2 = get_object_or_404(models.Contour, pk=self.request.query_params.get('contour'))
-        geom = contour1.polygon.intersection(contour2.polygon)
+        geom = contour1.data.intersection(contour2.data)
         return Response(data=json.loads(geom.json))

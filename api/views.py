@@ -1,5 +1,3 @@
-import json
-from django.contrib.gis.geos import Point
 from django.http import Http404
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.request import Request
@@ -50,5 +48,8 @@ class ContourIntersectionView(RetrieveAPIView):
         except Contour.DoesNotExist:
             raise NotFound(f'The second contour (id: {contour2_id}) does not exist')
         geom = contour1.data.intersection(contour2.data)
-        serializer = self.get_serializer(json.loads(geom.json))
+        serializer = self.get_serializer({
+            'type': geom.geom_type,
+            'coordinates': geom.coords
+        })
         return Response(data=serializer.data)

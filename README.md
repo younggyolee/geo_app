@@ -125,21 +125,6 @@ class Contour(models.Model):
 ```
 
 # Things for further improvement
-- GEOSGeometry data conversion: JSON <=> Python dict
-    - Here, `json.loads(geom.json)` is encoding GEOSGeometry object into JSON format, and then decoding it again into Python dict.
-    - This is because I was using the ready-made `djangorestframework-gis` and I couldn't find a way to directly convert `geom` into a python dict that I want.
-    - To avoid this performance loss from this, I will need to build a custom GEOSGeometry serializer.
-
-```python
-    # api/views.py
-    def retrieve(self, request: Request, *args, **kwargs):
-        contour1 = self.get_object()
-        contour2 = get_object_or_404(models.Contour, pk=self.request.query_params.get('contour'))
-        geom = contour1.data.intersection(contour2.data)
-        serializer = self.get_serializer(json.loads(geom.json))
-        return Response(data=serializer.data)
-```
-
 - GEOSGeometry data format serialization is not centralised
     - Only `ContourIntersectionView`'s output is serialized from custom serializer `GEOSGeometrySerializer`, while others are serialized implicitly by `djangorestframework-gis` since `'rest_framework_gis'` is in `INSTALLED_APPS` in `settings.py`. (See [link](https://github.com/openwisp/django-rest-framework-gis#geomodelserializer-deprecated))
     - In case `djangorestframework-gis` library is deprecated or somehow changes the output format, our API data representation can be affected. To remove this dependency, I will need to build up my own custom serializers.

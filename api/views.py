@@ -46,11 +46,11 @@ class ContourView(RetrieveUpdateDestroyAPIView):
     queryset = models.Contour.objects.all()
     serializer_class = ContourSerializer
 
-class ContourIntersectionView(GenericAPIView, RetrieveModelMixin):
+class ContourIntersectionView(RetrieveAPIView):
     queryset = models.Contour.objects.all()
     serializer_class = GEOSGeometrySerializer
 
-    def get(self, request: Request, *args, **kwargs):
+    def retrieve(self, request: Request, *args, **kwargs):
         contour1 = self.get_object()
         contour2 = get_object_or_404(models.Contour, pk=self.request.query_params.get('contour'))
         geom = contour1.data.intersection(contour2.data)

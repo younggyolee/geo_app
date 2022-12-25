@@ -5,27 +5,19 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from rest_framework import serializers
 
 from . import models
 
-class PointSerializer(GeoFeatureModelSerializer):
+class PointSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Point
-        geo_field = 'point'
-        fields = [
-            'id',
-            'point',
-        ]
+        fields = ['id', 'data']
 
-class ContourSerializer(GeoFeatureModelSerializer):
+class ContourSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Contour
-        geo_field = 'polygon'
-        fields = [
-            'id',
-            'polygon',
-        ]
+        fields = ['id', 'data']
 
 class PointListView(ListCreateAPIView):
     def get_queryset(self):

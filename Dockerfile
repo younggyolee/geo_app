@@ -3,7 +3,7 @@ FROM python:3.10.6
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# SQLITE
+# SQLite
 RUN apt-get -y update
 RUN apt-get -y upgrade
 RUN apt-get install -y sqlite3 libsqlite3-dev
@@ -23,5 +23,5 @@ RUN pip install -r requirements.txt
 COPY . /code/
 
 EXPOSE 8000  
-# RUN python manage.py migrate
+# RUN python manage.py migrate # comment out since I already included the DB for the ease of setup
 CMD python manage.py runserver 0.0.0.0:8000

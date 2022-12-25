@@ -1,7 +1,11 @@
 # Tasks
 - [x] Decide on the format => GeoJSON
 - [x] Implement API endpoints
-- [x] Support pagination for GET list endpoints
+    - [x] Core logics
+    - [x] Each point and contour should have a unique identifier which is either an auto-incremented value or UUID. => auto-incremented
+    - [x] Support pagination for GET list endpoints
+    - [x] validation: the x value is in range of -180 to 180, and the y value is in range of -90 to 90
+    - [x] validation: only simple polygons are accepted (contour)
 - [x] Document commands to launch, stop and test the application
 - [x] Document architecture of the application
 - [x] Design of data model

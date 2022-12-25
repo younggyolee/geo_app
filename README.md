@@ -17,13 +17,19 @@
   - If not macOS, please follow https://docs.djangoproject.com/en/4.1/ref/contrib/gis/install/ (follow `sqlite`)
 
 ```shell
-brew install pyenv # if pyenv is not installed on the machine
+brew install pyenv # if pyenv is not installed on the machine, follow https://github.com/pyenv/pyenv#homebrew-in-macos
 
 # to fix SQLITE error (load_extension off error)
 PYTHON_CONFIGURE_OPTS="--enable-loadable-sqlite-extensions" \
 LDFLAGS="-L/usr/local/opt/sqlite/lib" \
 CPPFLAGS="-I/usr/local/opt/sqlite/include" \
 pyenv install 3.10.6
+
+# if `error: System version of SQLite does not support loadable extensions` error appears while running the above command, install sqlite3 again using brew
+brew install sqlite3 
+echo 'export PATH="/usr/local/opt/sqlite/bin:$PATH"' >> ~/.zshrc
+export LDFLAGS="-L/usr/local/opt/sqlite/lib"
+export CPPFLAGS="-I/usr/local/opt/sqlite/include"
 
 # If error on LDFLAGS or CPPFLAGS above,
 # check sqlite directory using `brew info sqlite` or `which sqlite` or `which sqlite3`
@@ -52,7 +58,10 @@ python manage.py runserver
 - If you face an error (`django.db.utils.OperationalError: error in trigger ISO_metadata_reference_row_id_value_insert: no such column: rowid`) while running `python manage.py migrate`, run below and try again. ([reference](https://code.djangoproject.com/ticket/32935))
 
 ```shell
+rm db.sqlite3
 ./manage.py shell -c "import django;django.db.connection.cursor().execute('SELECT InitSpatialMetaData(1);')";
+python manage.py migrate
+python manage.py runserver
 ```
 
 # Data model
